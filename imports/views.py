@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, timezone
 from collections import Counter
 from imports.models import Person
 from imports.serializers import PersonSerializer
@@ -18,7 +18,6 @@ class PersonLoad(APIView):
 
     def post(self, request, *args, **kwargs):
         import_id = self.get_import_id()
-        print(request.data)
         if not isinstance(request.data, list):
             return Response("This method need list of objects. {} is not a valid data".format(request.data), status=status.HTTP_400_BAD_REQUEST)
         for person in request.data:
@@ -106,7 +105,7 @@ class TownStatistics(APIView):
         for town in towns:
             town_person = import_persons.filter(town=town['town']).order_by('-birth_date')
             count_persons = town_person.count()-1
-            get_persentile = lambda x: int((datetime.now(timezone.utc) - town_person[x].birth_date).days//365.25)
+            get_persentile = lambda x: int((date.today() - town_person[x].birth_date).days//365.25)
             h = count_persons*0.5 + 1
             p50_under = get_persentile(int(count_persons/2))
             p50_up = get_persentile(int(count_persons/2)+1) if count_persons else p50_under
@@ -127,4 +126,3 @@ class TownStatistics(APIView):
             p99 = p99_under + (h-int(h))*(p99_up-p99_under)
             towns_dict.append(dict(town=town['town'], p50=round(p50), p75=round(p75), p99=round(p99)))
         return Response(towns_dict)
-

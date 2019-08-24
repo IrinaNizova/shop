@@ -12,7 +12,7 @@ valid_set = [
         "street": "Iskri",
         "building": "15",
         "appartement": 3,
-        "birth_date": "1990-11-11T00:00:00Z",
+        "birth_date": "1990-11-11",
         "gender": "male",
         "relatives": [
             2,
@@ -26,7 +26,7 @@ valid_set = [
         "street": "Iskri",
         "building": "22",
         "appartement": 33,
-        "birth_date": "1970-11-11T00:00:00Z",
+        "birth_date": "1970-11-11",
         "gender": "male",
         "relatives": [
             1,
@@ -40,7 +40,7 @@ valid_set = [
         "street": "Iskri",
         "building": "17",
         "appartement": 7,
-        "birth_date": "1975-11-11T00:00:00Z",
+        "birth_date": "1975-11-11",
         "gender": "male",
         "relatives": [
             1,
@@ -54,7 +54,7 @@ valid_set = [
         "street": "Iskri",
         "building": "115",
         "appartement": 3,
-        "birth_date": "1987-11-11T00:00:00Z",
+        "birth_date": "1987-11-11",
         "gender": "male",
         "relatives": [
             2,
@@ -76,7 +76,7 @@ class CreateNewPersonsSetTest(TestCase):
 
     def test_create_valid_set(self):
         response = client.post(
-            '/imports/',
+            '/imports',
             data=json.dumps(self.valid_set),
             content_type='application/json'
         )
@@ -84,7 +84,7 @@ class CreateNewPersonsSetTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.json(), answer_text)
         response = client.post(
-            '/imports/',
+            '/imports',
             data=json.dumps(self.valid_set),
             content_type='application/json'
         )
@@ -94,7 +94,7 @@ class CreateNewPersonsSetTest(TestCase):
 
     def test_create_invalid_set(self):
         response = client.post(
-            '/imports/',
+            '/imports',
             data=json.dumps(self.invalid_set),
             content_type='application/json'
         )
@@ -106,7 +106,7 @@ class CreateGetPersonsSetTest(TestCase):
     def setUp(self):
         self.valid_set = valid_set
         response = client.post(
-            '/imports/',
+            '/imports',
             data=json.dumps(self.valid_set),
             content_type='application/json'
         )
@@ -129,7 +129,7 @@ class CreatePatchPersonsTest(TestCase):
     def setUp(self):
         self.valid_set = valid_set
         response = client.post(
-            '/imports/',
+            '/imports',
             data=json.dumps(self.valid_set),
             content_type='application/json'
         )
@@ -175,7 +175,7 @@ class GetAgeStatTest(TestCase):
     def setUp(self):
         self.valid_set = valid_set
         response = client.post(
-            '/imports/',
+            '/imports',
             data=json.dumps(self.valid_set),
             content_type='application/json'
         )

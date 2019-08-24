@@ -13,7 +13,7 @@ class Person(models.Model):
     building = models.CharField(max_length=50)
     appartement = models.SmallIntegerField()
     name = models.CharField(max_length=200, null=False)
-    birth_date = models.DateTimeField()
+    birth_date = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDERS, help_text="Male or Female")
     relatives = ArrayField(models.IntegerField(), size=20)
 
