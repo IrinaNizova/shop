@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+APPEND_SLASH=False
+
 TIME_OUT = 10
 # Application definition
 
@@ -78,11 +80,11 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shop',
-        'USER': 'customer',
-        'PASSWORD': '1qa@WS3ed',
+        'NAME': 'my',
+        'USER': 'postgres',
+        'PASSWORD': '000',
         'HOST': '',
-        'PORT': '5432',
+        'PORT': '5434',
     }
 }
 

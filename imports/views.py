@@ -18,6 +18,7 @@ class PersonLoad(APIView):
 
     def post(self, request, *args, **kwargs):
         import_id = self.get_import_id()
+        print(request.data)
         if not isinstance(request.data, list):
             return Response("This method need list of objects. {} is not a valid data".format(request.data), status=status.HTTP_400_BAD_REQUEST)
         for person in request.data:
@@ -45,6 +46,8 @@ class PersonPatch(generics.GenericAPIView):
     def patch(self, request, pk, citizen_pk, *args, **kwargs):
         if 'citizen_id' in request.data:
             return Response({'citizen_id': [ErrorDetail(string='Citizen id is not modified field', code='null')]}, status=status.HTTP_400_BAD_REQUEST)
+        if 'import_id' in request.data:
+            return Response({'import_id': [ErrorDetail(string='Import id is not modified field', code='null')]}, status=status.HTTP_400_BAD_REQUEST)
         null_values = [r for r in request.data if request.data[r] is None]
         if any(null_values):
             error_dict = {}
@@ -104,9 +107,24 @@ class TownStatistics(APIView):
             town_person = import_persons.filter(town=town['town']).order_by('-birth_date')
             count_persons = town_person.count()-1
             get_persentile = lambda x: int((datetime.now(timezone.utc) - town_person[x].birth_date).days//365.25)
-            p50 = get_persentile(round(count_persons//2))
-            p75 = get_persentile(round(count_persons*0.75))
-            p99 = get_persentile(round(count_persons*0.99))
-            towns_dict.append(dict(town=town['town'], p50=p50, p75=p75, p99=p99))
+            h = count_persons*0.5 + 1
+            p50_under = get_persentile(int(count_persons/2))
+            p50_up = get_persentile(int(count_persons/2)+1) if count_persons else p50_under
+            p50 = p50_under + (h-int(h))*(p50_up-p50_under)
+            if town_person.count() % 4 == 0:
+                h = town_person.count()*0.75 - 1
+            else:
+                h = count_persons*0.75 + 1
+            p75_under = get_persentile(int(count_persons*0.75))
+            p75_up = get_persentile(int(count_persons*0.75)+1) if count_persons else p75_under
+            p75 = p75_under + (h-int(h))*(p75_up-p75_under)
+            if town_person.count() % 99 == 0:
+                h = town_person.count()*0.99 - 1
+            else:
+                h = count_persons*0.99 + 1
+            p99_under = get_persentile(int(count_persons*0.99))
+            p99_up = get_persentile(int(count_persons*0.99)+1) if count_persons else p99_under
+            p99 = p99_under + (h-int(h))*(p99_up-p99_under)
+            towns_dict.append(dict(town=town['town'], p50=round(p50), p75=round(p75), p99=round(p99)))
         return Response(towns_dict)
 

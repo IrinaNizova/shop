@@ -1,10 +1,7 @@
 import json
 from rest_framework import status
 from django.test import TestCase, Client
-from django.urls import reverse
-from .views import PersonLoad
-from .models import Person
-from .serializers import PersonSerializer
+
 
 client = Client()
 valid_set = [
@@ -156,6 +153,14 @@ class CreatePatchPersonsTest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_forbidden_data(self):
+        response = client.patch(
+            '/imports/1/citizens/1',
+            data=json.dumps({"citizen_id":33}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_patch_invalid_data_set(self):
         response = client.patch(
             '/imports/1/citizens/6',
@@ -163,3 +168,29 @@ class CreatePatchPersonsTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class GetAgeStatTest(TestCase):
+
+    def setUp(self):
+        self.valid_set = valid_set
+        response = client.post(
+            '/imports/',
+            data=json.dumps(self.valid_set),
+            content_type='application/json'
+        )
+
+    def test_get_age_stat(self):
+        response = client.get(
+            '/imports/1/citizens/towns/stat/percentile/age'
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        age_stat = [
+            {
+                "town": "Moscow",
+                "p50": 37,
+                "p75": 43,
+                "p99": 48
+            }
+        ]
+        self.assertEqual(response.json(), age_stat)
